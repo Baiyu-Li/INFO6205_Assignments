@@ -63,6 +63,7 @@ public class Timer {
         		 t = preFunction.apply(t);
         	} 
         	resume();
+        	lap();
         	U u = function.apply(t);
         	pauseAndLap();        	
         	if(postFunction!=null) {
