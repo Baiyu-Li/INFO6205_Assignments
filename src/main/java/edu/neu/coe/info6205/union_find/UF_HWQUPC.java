@@ -8,6 +8,7 @@
 package edu.neu.coe.info6205.union_find;
 
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Height-weighted Quick Union with Path Compression
@@ -82,6 +83,12 @@ public class UF_HWQUPC implements UF {
         validate(p);
         int root = p;
         // TO BE IMPLEMENTED
+        while(root != parent[root]){
+            root = parent[root];
+        }
+        if(pathCompression){
+            doPathCompression(p);
+        }
         return root;
     }
 
@@ -169,6 +176,15 @@ public class UF_HWQUPC implements UF {
 
     private void mergeComponents(int i, int j) {
         // TO BE IMPLEMENTED make shorter root point to taller one
+    	if (i==j) return;
+    	if (height[i] < height[j]) { 
+    		parent[i]=j;
+    		height[j] += height[i];
+    	}
+    	else {
+            parent[j] = i;
+            height[i] += height[j];
+        }
     }
 
     /**
@@ -176,5 +192,51 @@ public class UF_HWQUPC implements UF {
      */
     private void doPathCompression(int i) {
         // TO BE IMPLEMENTED update parent to value of grandparent
+    	while(i != parent[i]){
+            parent[i] = parent[parent[i]];
+            i = parent[i];
+        }
+    }
+    
+    //UF ("union-find") client
+    private static int count(int n) {       
+        int uf_count = 0;
+        int result = 0;
+        UF_HWQUPC uf = new UF_HWQUPC(n, true);
+                
+        while(uf_count != 1){
+            int p = (int)(Math.random() * n);
+            int q = (int)(Math.random() * n);
+            
+            if(! uf.connected(p, q) && p != q){
+                uf.union(p, q);
+                //result++;
+            }
+            result++;
+            uf_count = uf.components();
+        }
+        return result;
+    }
+
+    public static void main(String[] args){
+    	Random random = new Random();
+        int m = 0;           
+        
+        System.out.println("Random n");
+        for(int i = 0; i < 50; i++){
+        	int n = random.nextInt(50000);
+        	m = count(n);
+            System.out.println("Objects(n): " + n + " Pairs(m): " + m);
+        } 
+        
+        System.out.println("Repeat n");
+        for(int n = 10; n <= 50000; n *= 5)
+        {
+            for(int i = 0; i < 20; i++)
+            {
+                m = count(n);
+                System.out.println("Objects(n): " + n + " Pairs(m): " + m);
+            }
+        }
     }
 }
